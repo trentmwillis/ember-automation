@@ -15,7 +15,7 @@ The API for Ember Automation lives under the global `automation` object during
 your tests. It provides some hooks and methods for adding functionality and
 controlling when that functionality runs.
 
-**`afterRender`**
+#### `afterRender`
 
 The `afterRender` function provides a hook for adding additional functionality
 to the automation framework. It accepts a callback function as the parameter
@@ -25,7 +25,7 @@ which will run after every render during acceptance tests.
 automation.afterRender(function accessibilityCheck() { ... });
 ```
 
-**`onAutomation`**
+#### `onAutomation`
 
 The `onAutomation` function provides a hook for adding functionality at the
 start of each test module or whenever you turn the automation on. This could
@@ -36,7 +36,7 @@ visuals.
 automation.onAutomation(function adjustContainer() { ... });
 ```
 
-**`offAutomation`**
+#### `offAutomation`
 
 The `offAutomation` function provides a hook for adding functionality at the end
 of each test module or whenever you turn the automation off. This could
@@ -46,17 +46,29 @@ include things such as destroying mocks or resetting the test container visuals.
 automation.offAutomation(function destroyMocks() { ... });
 ```
 
-Note: these callbacks also run at the end of all tests to ensure everything is
-reset to it's original state.
+Note: _these callbacks also run at the end of all tests to ensure everything is
+reset to it's original state._
 
-**`on`**
+#### `on`
 
 The `on` function allows you to manually turn the automation on. This can be
 used to enable automation during unit tests or in conjunction with `off` to
 control which tests inside a module actually have automation.
 
-**`off`**
+```javascript
+automation.on();
+```
+
+#### `off`
 
 The `off` function allows you to manually turn the automation off. This can be
 used to disable automation during acceptance tests or in conjunction with `on`
 to control which tests inside a module actually have automation.
+
+```javascript
+automation.off();
+```
+
+## Development
+
+Coming soon!
