@@ -1,25 +1,62 @@
-# Ember-automation
+# Ember Automation
 
-This README outlines the details of collaborating on this Ember addon.
+This addon provides hooks to help automate testing and development in Ember-CLI
+workflows.
 
-## Installation
+## Testing
 
-* `git clone` this repository
-* `npm install`
-* `bower install`
+In testing, automation is given for checking state changes by running callbacks
+at the end of every render in your acceptance tests. This helps ensure every
+state of your user flows is valid.
 
-## Running
+### Testing: API
 
-* `ember server`
-* Visit your app at http://localhost:4200.
+The API for Ember Automation lives under the global `automation` object during
+your tests. It provides some hooks and methods for adding functionality and
+controlling when that functionality runs.
 
-## Running Tests
+**`afterRender`**
 
-* `ember test`
-* `ember test --server`
+The `afterRender` function provides a hook for adding additional functionality
+to the automation framework. It accepts a callback function as the parameter
+which will run after every render during acceptance tests.
 
-## Building
+```javascript
+automation.afterRender(function accessibilityCheck() { ... });
+```
 
-* `ember build`
+**`onAutomation`**
 
-For more information on using ember-cli, visit [http://www.ember-cli.com/](http://www.ember-cli.com/).
+The `onAutomation` function provides a hook for adding functionality at the
+start of each test module or whenever you turn the automation on. This could
+include things such as stubbing out methods or adjust the test container
+visuals.
+
+```javascript
+automation.onAutomation(function adjustContainer() { ... });
+```
+
+**`offAutomation`**
+
+The `offAutomation` function provides a hook for adding functionality at the end
+of each test module or whenever you turn the automation off. This could
+include things such as destroying mocks or resetting the test container visuals.
+
+```javascript
+automation.offAutomation(function destroyMocks() { ... });
+```
+
+Note: these callbacks also run at the end of all tests to ensure everything is
+reset to it's original state.
+
+**`on`**
+
+The `on` function allows you to manually turn the automation on. This can be
+used to enable automation during unit tests or in conjunction with `off` to
+control which tests inside a module actually have automation.
+
+**`off`**
+
+The `off` function allows you to manually turn the automation off. This can be
+used to disable automation during acceptance tests or in conjunction with `on`
+to control which tests inside a module actually have automation.

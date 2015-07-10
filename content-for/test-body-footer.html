@@ -1,0 +1,168 @@
+<script>
+  (function emberAutomation() {
+   /**
+     * The registry of callbacks for each of the different hooks.
+     * @private
+     * @type {Object}
+     */
+    var _callbacks = {
+      afterRender: [],
+      onAutomation: [],
+      offAutomation: []
+    };
+
+    /**
+     * Checks to see if a callback is a function and adds it to the respective
+     * queue if it is.
+     * @param {String} queue
+     * @param {Object} callback
+     * @return {Void}
+     */
+    function _registerCallback(queue, callback) {
+      var type = typeof callback;
+      if (type !== 'function') {
+        throw new Error('Error: callback needs to be of type function, not of type ' + type);
+      }
+
+      _callbacks[queue].push(callback);
+    }
+
+    /**
+     * Runs all the callbacks in a given queue.
+     * @param {String} queue
+     * @return {Void}
+     */
+    function _runCallbacks(queue) {
+      var callbacks = _callbacks[queue];
+      for (var i = 0, l = callbacks.length; i < l; i++) {
+        callbacks[i]();
+      }
+    }
+
+    /**
+     * The function that gets executed on completion of a render cycle. It
+     * runs all the afterRender callbacks that have been registered.
+     * @private
+     * @return {Void}
+     */
+    function _afterRender() {
+      _runCallbacks('afterRender');
+    }
+
+    /**
+     * Enables {@link _afterRender} to run after the render queue is flushed and
+     * runs all callbacks in the onAutomation queue.
+     * @private
+     * @return {Void}
+     */
+    function _automationOn() {
+      Ember.run.backburner.options.render = { after: _afterRender };
+      _runCallbacks('onAutomation');
+    }
+
+    /**
+     * Disables {@link _afterRender} from running after the render queue and
+     * runs all callbacks in the offAutomation queue.
+     * @private
+     * @return {Void}
+     */
+    function _automationOff() {
+      Ember.run.backburner.options.render = { after: undefined };
+      _runCallbacks('offAutomation');
+    }
+
+    /**
+     * Used as a callback at the beginning of each test module. It checks
+     * if the test is an acceptance test (based on standard Ember-CLI naming
+     * conventions) and sets up automation accordingly.
+     * @private
+     * @param {Object} details
+     * @return {Void}
+     */
+    function _moduleStart(details) {
+      if (~details.name.indexOf('Acceptance')) {
+        _automationOn();
+      } else {
+        _automationOff();
+      }
+    }
+
+    /**
+     * Used as a callback at the end of all testing. It ensures that automation
+     * is turned off, resetting any modifications.
+     * @return {Void}
+     */
+    function _qunitDone() {
+      _automationOff();
+    }
+
+    /**
+     * Define a limited API for interacting with the automation framework.
+     * @public
+     * @type {Object}
+     */
+    automation = {
+      /**
+       * The registry of callbacks for each of the different hooks. This is
+       * private, but sometimes useful for debugging, so we expose it publicly.
+       * @private
+       * @type {Object}
+       */
+      _callbacks: _callbacks,
+
+      /**
+       * The hook for consumers to provide automation functionality.
+       * @public
+       * @type {Function}
+       */
+      afterRender: function(callback) {
+        _registerCallback('afterRender', callback);
+      },
+
+      /**
+       * The hook for consumers to provide any additional setup at the start of
+       * each test module.
+       * @public
+       * @type {Function}
+       */
+      onAutomation: function(callback) {
+        _registerCallback('onAutomation', callback);
+      },
+
+      /**
+       * The hook for consumers to provide any additional teardown at the end of
+       * each test module and the end of testing as a whole.
+       * @public
+       * @type {Function}
+       */
+      offAutomation: function(callback) {
+        _registerCallback('offAutomation', callback);
+      },
+
+      /**
+       * Manually turns the automated callbacks on.
+       * @public
+       * @return {Void}
+       */
+      on: function() {
+        _automationOn();
+      },
+
+      /**
+       * Manually turns the automated callbacks off.
+       * @public
+       * @return {Void}
+       */
+      off: function() {
+        _automationOff();
+      }
+    };
+
+    /**
+     * Register the {@link _moduleStart} and {@link _qunitDone} callbacks on the
+     * global QUnit object for usage during the testing run.
+     */
+    QUnit.moduleStart(_moduleStart);
+    QUnit.done(_qunitDone);
+  }());
+</script>
