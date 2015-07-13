@@ -3,6 +3,8 @@
 
 var path = require('path');
 var fs = require('fs');
+var Funnel = require('broccoli-funnel');
+var VersionChecker = require('ember-cli-version-checker');
 
 // The different types/area for which we have content for.
 var ALLOWED_CONTENT_FOR = [
