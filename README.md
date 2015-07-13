@@ -1,5 +1,7 @@
 # Ember Automation
 
+[![Build Status](https://travis-ci.org/trentmwillis/ember-automation.svg?branch=master)](https://travis-ci.org/trentmwillis/ember-automation)
+
 This addon provides hooks to help automate testing and development in Ember-CLI
 workflows.
 
