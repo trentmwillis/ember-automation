@@ -32,12 +32,12 @@ module.exports = {
    */
   treeForApp: function(tree) {
     var checker = new VersionChecker(this);
-    var isProductionBuild = this.app && this.app.env === 'production';
+    var isProductionBuild = process.env.EMBER_ENV === 'production';
     var isOldEmber = checker.for('ember', 'bower').lt('1.13.0');
 
     if (isProductionBuild || isOldEmber) {
       tree = new Funnel(tree, {
-        exclude: [/instance-initializers\/auto-run-component.js/]
+        exclude: [ /instance-initializers/ ]
       });
     }
 
